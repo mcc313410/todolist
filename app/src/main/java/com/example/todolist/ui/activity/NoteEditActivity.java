@@ -7,11 +7,13 @@ import com.example.todolist.databinding.ActivityNoteEditBinding;
 import com.example.todolist.db.NoteEditDao;
 import com.example.todolist.db.NoteQueryDao;
 import com.example.todolist.entity.NoteEntity;
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.UpdateListener;
 
 public class NoteEditActivity extends BaseActivity {
     private ActivityNoteEditBinding binding;
     private NoteEditDao editDao;
-    private NoteQueryDao queryDao;
     private NoteEntity note;
 
     @Override
@@ -19,30 +21,49 @@ public class NoteEditActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityNoteEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         editDao = new NoteEditDao(this);
-        queryDao = new NoteQueryDao(this);
-
         long id = getIntent().getLongExtra("note_id", -1);
-        if (id == -1) { finish(); return; }
-        note = queryDao.queryNoteById(id);
-        if (note == null) { finish(); return; }
+        note = new NoteQueryDao(this).queryNoteById(id);
 
-        binding.etTitle.setText(note.getTitle());
-        binding.etContent.setText(note.getContent());
-        binding.btnSave.setOnClickListener(v -> update());
+        if (note != null) {
+            binding.etTitle.setText(note.getTitle());
+            binding.etContent.setText(note.getContent());
+        }
+
+        binding.ivBack.setOnClickListener(v -> finish());
+        binding.btnSave.setOnClickListener(v -> save());
     }
 
-    private void update() {
+    private void save() {
         String title = binding.etTitle.getText().toString().trim();
         String content = binding.etContent.getText().toString().trim();
-        if (title.isEmpty() || content.isEmpty()) {
-            Toast.makeText(this, "标题和内容不能为空", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         note.setTitle(title);
         note.setContent(content);
-        editDao.updateNote(note);
-        Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
+        editDao.update(note);
+
+        if (note.isSync() && note.getObjectId() != null) {
+            BmobObject obj = new BmobObject("NoteCloud");
+            obj.setObjectId(note.getObjectId());
+            obj.setValue("title", title);
+            obj.setValue("content", content);
+            obj.setValue("isTop", note.getIsTop());
+            obj.setValue("isCollect", note.getIsCollect());
+
+            obj.update(new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    if (e == null) {
+                        Toast.makeText(NoteEditActivity.this, "保存并同步云端成功", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
+        }
+
+        setResult(RESULT_OK);
         finish();
     }
 }

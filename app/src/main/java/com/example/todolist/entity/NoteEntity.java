@@ -5,74 +5,32 @@ public class NoteEntity {
     private String title;
     private String content;
     private String createTime;
-    private int isTop;       // 1置顶 0否
-    private int isCollect;   // 1收藏 0否
-
-    // 新增：Bmob云端ID + 同步状态
+    private int isCollect;
+    private int isTop;
     private String objectId;
-    private boolean isSync;  // true=已同步云端  false=未同步
+    private boolean isSync;
 
-    public long getId() {
-        return id;
-    }
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public String getCreateTime() { return createTime; }
+    public void setCreateTime(String createTime) { this.createTime = createTime; }
 
-    public String getContent() {
-        return content;
-    }
+    public int getIsCollect() { return isCollect; }
+    public void setIsCollect(int collect) { isCollect = collect; }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public int getIsTop() { return isTop; }
+    public void setIsTop(int top) { isTop = top; }
 
-    public String getCreateTime() {
-        return createTime;
-    }
+    public String getObjectId() { return objectId; }
+    public void setObjectId(String objectId) { this.objectId = objectId; }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public int getIsTop() {
-        return isTop;
-    }
-
-    public void setIsTop(int isTop) {
-        this.isTop = isTop;
-    }
-
-    public int getIsCollect() {
-        return isCollect;
-    }
-
-    public void setIsCollect(int isCollect) {
-        this.isCollect = isCollect;
-    }
-
-    public String getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
-    }
-
-    public boolean isSync() {
-        return isSync;
-    }
-
-    public void setSync(boolean sync) {
-        isSync = sync;
-    }
+    public boolean isSync() { return isSync; }
+    public void setSync(boolean sync) { isSync = sync; }
 }

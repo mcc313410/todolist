@@ -1,7 +1,14 @@
 package com.example.todolist.base;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import com.example.todolist.utils.ThemeUtil;
 
 public class BaseActivity extends AppCompatActivity {
-    // 以后所有 Activity 继承这个，方便统一加逻辑
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ThemeUtil.applyTheme(this);
+        super.onCreate(savedInstanceState);
+    }
 }

@@ -18,7 +18,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     private ActivityNoteListBinding binding;
     private NoteListAdapter adapter;
-    private NoteQueryDao noteQueryDao;
+    private NoteQueryDao queryDao;
     private List<NoteEntity> allNotes = new ArrayList<>();
 
     @Override
@@ -27,10 +27,24 @@ public class NoteListActivity extends AppCompatActivity {
         binding = ActivityNoteListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        noteQueryDao = new NoteQueryDao(this);
+        queryDao = new NoteQueryDao(this);
         initRecyclerView();
         initSearch();
-        binding.btnAdd.setOnClickListener(v -> startActivity(new Intent(this, NoteAddActivity.class)));
+
+        binding.btnAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(this, NoteAddActivity.class);
+            startActivity(intent);
+        });
+
+        binding.tvTrash.setOnClickListener(v -> {
+            Intent intent = new Intent(this, TrashActivity.class);
+            startActivity(intent);
+        });
+
+        binding.tvCollect.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CollectActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void initRecyclerView() {
@@ -82,7 +96,18 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void loadNotes() {
-        allNotes = noteQueryDao.queryAllNotes();
+        allNotes = queryDao.queryAllNotes();
+        adapter.setData(allNotes);
         filterNotes(binding.etSearch.getText().toString());
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            loadNotes();
+        }
+    }
+
+
 }

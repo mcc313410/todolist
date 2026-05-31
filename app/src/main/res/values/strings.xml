@@ -1,3 +1,23 @@
 <resources>
-    <string name="app_name">TodoList</string>
+    <string name="app_name">笔记</string>
+    <string name="back">返回</string>
+    <string name="trash">回收站</string>
+    <string name="clear">清空</string>
+    <string name="trash_empty">回收站为空</string>
+    <string name="trash_empty_hint">回收站为空</string>
+    <string name="my_notes">我的笔记</string>
+    <string name="collect">收藏</string>
+    <string name="collect_notes">收藏笔记</string>
+    <string name="search_hint">搜索笔记...</string>
+    <string name="empty_hint">暂无笔记，点击右下角添加吧～</string>
+    <string name="new_note">新建笔记</string>
+    <string name="title_hint">标题</string>
+    <string name="content_hint">输入内容...</string>
+    <string name="save">保存</string>
+    <string name="collect_star">收藏标记</string>
+    <string name="top">置顶</string>
+    <string name="empty_collect_hint">暂无收藏笔记</string>
+    <string name="edit">编辑</string>
+    <string name="upload">同步云端</string>
+    <string name="delete">删除</string>
 </resources>

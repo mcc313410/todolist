@@ -4,25 +4,29 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import com.example.todolist.entity.NoteEntity;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.example.todolist.utils.DateUtil;
 
 public class NoteAddDao {
-    private SQLiteDatabase db;
+    private final NoteDBHelper helper;
 
     public NoteAddDao(Context context) {
-        NoteDBHelper helper = new NoteDBHelper(context);
-        db = helper.getWritableDatabase();
+        helper = new NoteDBHelper(context);
     }
 
-    public void addNote(NoteEntity note) {
-        ContentValues values = new ContentValues();
-        values.put(NoteDBHelper.COL_TITLE, note.getTitle());
-        values.put(NoteDBHelper.COL_CONTENT, note.getContent());
-        values.put(NoteDBHelper.COL_TIME, new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date()));
-        values.put(NoteDBHelper.COL_TOP, 0);
-        values.put(NoteDBHelper.COL_COLLECT, 0);
-        db.insert(NoteDBHelper.TABLE_NOTE, null, values);
+    // 这个 insert 方法就是你报错里缺失的
+    public long insert(NoteEntity note) {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(NoteDBHelper.COL_TITLE, note.getTitle());
+        cv.put(NoteDBHelper.COL_CONTENT, note.getContent());
+        cv.put(NoteDBHelper.COL_CREATE_TIME, DateUtil.getCurrentTime());
+        cv.put(NoteDBHelper.COL_IS_TOP, note.getIsTop());
+        cv.put(NoteDBHelper.COL_IS_COLLECT, note.getIsCollect());
+        cv.put(NoteDBHelper.COL_OBJECT_ID, note.getObjectId());
+        cv.put(NoteDBHelper.COL_IS_SYNC, note.isSync() ? 1 : 0);
+
+        long id = db.insert(NoteDBHelper.TABLE_NOTE, null, cv);
+        db.close();
+        return id;
     }
 }

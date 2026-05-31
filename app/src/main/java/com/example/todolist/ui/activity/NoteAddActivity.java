@@ -1,14 +1,11 @@
 package com.example.todolist.ui.activity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
-
 import com.example.todolist.base.BaseActivity;
 import com.example.todolist.databinding.ActivityNoteAddBinding;
-import com.example.todolist.db.NoteEditDao;
+import com.example.todolist.db.NoteAddDao;
 import com.example.todolist.entity.NoteEntity;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -16,7 +13,7 @@ import java.util.Locale;
 public class NoteAddActivity extends BaseActivity {
 
     private ActivityNoteAddBinding binding;
-    private NoteEditDao editDao;
+    private NoteAddDao addDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +21,9 @@ public class NoteAddActivity extends BaseActivity {
         binding = ActivityNoteAddBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        editDao = new NoteEditDao(this);
+        addDao = new NoteAddDao(this);
 
-        // ✅ 返回箭头：空不填空都能直接退出
         binding.ivBack.setOnClickListener(v -> finish());
-
-        // 保存笔记
         binding.btnSave.setOnClickListener(v -> saveNote());
     }
 
@@ -37,26 +31,35 @@ public class NoteAddActivity extends BaseActivity {
         String title = binding.etTitle.getText().toString().trim();
         String content = binding.etContent.getText().toString().trim();
 
-        // 你原来的逻辑：可以保留“标题非空”校验，也可以去掉
         if (title.isEmpty()) {
             Toast.makeText(this, "标题不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // 当前时间
-        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+        if (content.isEmpty()) {
+            Toast.makeText(this, "内容不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         NoteEntity note = new NoteEntity();
         note.setTitle(title);
         note.setContent(content);
-        note.setCreateTime(time);
+        note.setCreateTime(getCurrentTime());
         note.setIsTop(0);
         note.setIsCollect(0);
-        note.setObjectId("");
         note.setSync(false);
 
-        editDao.insertNote(note);
-        Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
-        finish();
+        long id = addDao.insert(note);
+        if (id > 0) {
+            Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
+            setResult(RESULT_OK);
+            finish();
+        } else {
+            Toast.makeText(this, "保存失败", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String getCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }
