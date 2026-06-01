@@ -14,10 +14,14 @@ public class NoteQueryDao {
         helper = new NoteDBHelper(context);
     }
 
+    // 查询所有未删除的笔记（核心修改：过滤is_deleted=0）
     public List<NoteEntity> queryAllNotes() {
         List<NoteEntity> list = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
-        Cursor cursor = db.query(NoteDBHelper.TABLE_NOTE, null, null, null, null, null,
+        // 新增where条件：仅查询未删除的笔记
+        Cursor cursor = db.query(NoteDBHelper.TABLE_NOTE, null,
+                NoteDBHelper.COL_IS_DELETED + "=?", new String[]{"0"},
+                null, null,
                 NoteDBHelper.COL_IS_TOP + " DESC, " + NoteDBHelper.COL_CREATE_TIME + " DESC");
         while (cursor.moveToNext()) {
             NoteEntity note = new NoteEntity();
@@ -36,6 +40,7 @@ public class NoteQueryDao {
         return list;
     }
 
+    // 根据ID查询笔记（兼容已删除状态）
     public NoteEntity queryNoteById(long id) {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query(NoteDBHelper.TABLE_NOTE, null,
@@ -58,12 +63,17 @@ public class NoteQueryDao {
         return note;
     }
 
+    // 搜索笔记（仅搜索未删除的）
     public List<NoteEntity> searchNotes(String key) {
         List<NoteEntity> list = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
+        // 新增where条件：过滤未删除 + 模糊搜索标题/内容
+        String whereClause = NoteDBHelper.COL_IS_DELETED + "=? AND (" +
+                NoteDBHelper.COL_TITLE + " LIKE ? OR " + NoteDBHelper.COL_CONTENT + " LIKE ?)";
+        String[] whereArgs = new String[]{"0", "%" + key + "%", "%" + key + "%"};
+
         Cursor cursor = db.query(NoteDBHelper.TABLE_NOTE, null,
-                NoteDBHelper.COL_TITLE + " LIKE ? OR " + NoteDBHelper.COL_CONTENT + " LIKE ?",
-                new String[]{"%" + key + "%", "%" + key + "%"}, null, null,
+                whereClause, whereArgs, null, null,
                 NoteDBHelper.COL_IS_TOP + " DESC, " + NoteDBHelper.COL_CREATE_TIME + " DESC");
         while (cursor.moveToNext()) {
             NoteEntity note = new NoteEntity();

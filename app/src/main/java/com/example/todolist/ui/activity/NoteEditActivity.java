@@ -1,6 +1,8 @@
 package com.example.todolist.ui.activity;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Toast;
 import com.example.todolist.base.BaseActivity;
 import com.example.todolist.databinding.ActivityNoteEditBinding;
@@ -31,6 +33,25 @@ public class NoteEditActivity extends BaseActivity {
             binding.etContent.setText(note.getContent());
         }
 
+        binding.tvWordCount.setText("已输入 0 字");
+
+        binding.etContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                binding.tvWordCount.setText("已输入 " + s.length() + " 字");
+            }
+        });
+
         binding.ivBack.setOnClickListener(v -> finish());
         binding.btnSave.setOnClickListener(v -> save());
     }
@@ -48,19 +69,19 @@ public class NoteEditActivity extends BaseActivity {
             obj.setObjectId(note.getObjectId());
             obj.setValue("title", title);
             obj.setValue("content", content);
-            obj.setValue("isTop", note.getIsTop());
-            obj.setValue("isCollect", note.getIsCollect());
 
             obj.update(new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
-                        Toast.makeText(NoteEditActivity.this, "保存并同步云端成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NoteEditActivity.this, "✅ 保存并同步云端成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(NoteEditActivity.this, "❌ 云端同步失败", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         } else {
-            Toast.makeText(this, "保存成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(NoteEditActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
         }
 
         setResult(RESULT_OK);

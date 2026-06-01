@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class NoteDBHelper extends SQLiteOpenHelper {
 
-    // 数据库名和版本
+    // 数据库名和版本（版本号从2升级到3，触发onUpgrade）
     private static final String DB_NAME = "note.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     // 笔记表
     public static final String TABLE_NOTE = "note";
@@ -20,14 +20,16 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public static final String COL_IS_COLLECT = "is_collect";
     public static final String COL_OBJECT_ID = "object_id";
     public static final String COL_IS_SYNC = "is_sync";
+    // 新增：删除标记字段
+    public static final String COL_IS_DELETED = "is_deleted";
 
-    // 回收站表（这就是你报错里缺失的定义）
+    // 回收站表
     public static final String TABLE_TRASH = "trash";
     public static final String COL_TRASH_ID = "_id";
     public static final String COL_TRASH_NOTE_ID = "note_id";
     public static final String COL_TRASH_DELETE_TIME = "delete_time";
 
-    // 创建笔记表 SQL
+    // 创建笔记表 SQL（新增is_deleted字段，默认0）
     private static final String CREATE_TABLE_NOTE =
             "CREATE TABLE " + TABLE_NOTE + " (" +
                     COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -37,7 +39,8 @@ public class NoteDBHelper extends SQLiteOpenHelper {
                     COL_IS_TOP + " INTEGER DEFAULT 0, " +
                     COL_IS_COLLECT + " INTEGER DEFAULT 0, " +
                     COL_OBJECT_ID + " TEXT, " +
-                    COL_IS_SYNC + " INTEGER DEFAULT 0)";
+                    COL_IS_SYNC + " INTEGER DEFAULT 0, " +
+                    COL_IS_DELETED + " INTEGER DEFAULT 0)"; // 新增删除标记
 
     // 创建回收站表 SQL
     private static final String CREATE_TABLE_TRASH =
@@ -58,8 +61,8 @@ public class NoteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTE);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRASH);
-        onCreate(db);
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE " + TABLE_NOTE + " ADD COLUMN " + COL_IS_DELETED + " INTEGER DEFAULT 0");
+        }
     }
 }

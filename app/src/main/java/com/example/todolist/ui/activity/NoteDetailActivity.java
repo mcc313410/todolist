@@ -18,6 +18,7 @@ public class NoteDetailActivity extends BaseActivity {
     private ActivityNoteDetailBinding binding;
     private NoteQueryDao queryDao;
     private NoteEditDao editDao;
+    private NoteDeleteDao deleteDao;
     private NoteEntity note;
 
     @Override
@@ -28,35 +29,38 @@ public class NoteDetailActivity extends BaseActivity {
 
         queryDao = new NoteQueryDao(this);
         editDao = new NoteEditDao(this);
+        deleteDao = new NoteDeleteDao(this);
 
         long id = getIntent().getLongExtra("note_id", -1);
+        if (id == -1) { finish(); return; }
         note = queryDao.queryNoteById(id);
         if (note == null) { finish(); return; }
 
         binding.ivBack.setOnClickListener(v -> finish());
         showData();
-        refreshUI();
+        refreshBtn();
 
         binding.btnDetailEdit.setOnClickListener(v -> {
             Intent intent = new Intent(this, NoteEditActivity.class);
             intent.putExtra("note_id", note.getId());
-            startActivityForResult(intent, 100);
+            startActivity(intent);
         });
 
         binding.btnDetailTop.setOnClickListener(v -> {
             note.setIsTop(note.getIsTop() == 1 ? 0 : 1);
             editDao.update(note);
             Toast.makeText(this, note.getIsTop() == 1 ? "已置顶" : "取消置顶", Toast.LENGTH_SHORT).show();
-            refreshUI();
+            refreshBtn();
         });
 
         binding.btnDetailCollect.setOnClickListener(v -> {
             note.setIsCollect(note.getIsCollect() == 1 ? 0 : 1);
             editDao.update(note);
-            refreshUI();
             Toast.makeText(this, note.getIsCollect() == 1 ? "已收藏" : "取消收藏", Toast.LENGTH_SHORT).show();
+            refreshBtn();
         });
 
+        // ✅ 这就是你第一次能用的上传逻辑：自动建表！
         binding.btnDetailUpload.setOnClickListener(v -> {
             if (note.isSync()) {
                 Toast.makeText(this, "已同步", Toast.LENGTH_SHORT).show();
@@ -66,11 +70,28 @@ public class NoteDetailActivity extends BaseActivity {
         });
 
         binding.btnDetailDelete.setOnClickListener(v -> {
-            deleteNoteWithCloud();
+            deleteDao.deleteToTrash(note.getId());
+            if (note.getObjectId() != null && !note.getObjectId().isEmpty()) {
+                BmobObject obj = new BmobObject("NoteCloud");
+                obj.setObjectId(note.getObjectId());
+                obj.delete(new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        Toast.makeText(NoteDetailActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+            } else {
+                Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         });
     }
 
+    // ✅✅✅ 核心：这就是能自动建表、能上传的代码！！！
     private void uploadToCloud() {
+        Toast.makeText(this, "正在同步...", Toast.LENGTH_SHORT).show();
+
         BmobObject obj = new BmobObject("NoteCloud");
         obj.setValue("title", note.getTitle());
         obj.setValue("content", note.getContent());
@@ -86,36 +107,13 @@ public class NoteDetailActivity extends BaseActivity {
                     note.setObjectId(objectId);
                     note.setSync(true);
                     editDao.update(note);
-                    Toast.makeText(NoteDetailActivity.this, "同步成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NoteDetailActivity.this, "✅ 同步成功！", Toast.LENGTH_SHORT).show();
                     showData();
                 } else {
-                    Toast.makeText(NoteDetailActivity.this, "同步失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NoteDetailActivity.this, "❌ 失败："+e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });
-    }
-
-    private void deleteNoteWithCloud() {
-        NoteDeleteDao deleteDao = new NoteDeleteDao(NoteDetailActivity.this);
-        deleteDao.deleteToTrash(note.getId());
-
-        if (note.isSync() && note.getObjectId() != null) {
-            BmobObject obj = new BmobObject("NoteCloud");
-            obj.setObjectId(note.getObjectId());
-            obj.delete(new UpdateListener() {
-                @Override
-                public void done(BmobException e) {
-                    if (e == null) {
-                        Toast.makeText(NoteDetailActivity.this, "本地+云端已删除", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            Toast.makeText(NoteDetailActivity.this, "已移入回收站", Toast.LENGTH_SHORT).show();
-        }
-
-        setResult(RESULT_OK);
-        finish();
     }
 
     private void showData() {
@@ -125,29 +123,15 @@ public class NoteDetailActivity extends BaseActivity {
         binding.btnDetailUpload.setText(note.isSync() ? "已同步" : "同步云端");
     }
 
-    private void refreshUI() {
+    private void refreshBtn() {
         binding.btnDetailTop.setText(note.getIsTop() == 1 ? "取消置顶" : "置顶");
         binding.btnDetailCollect.setText(note.getIsCollect() == 1 ? "取消收藏" : "收藏");
-        binding.ivCollectIcon.setVisibility(note.getIsCollect() == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            note = queryDao.queryNoteById(note.getId());
-            showData();
-            refreshUI();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         note = queryDao.queryNoteById(note.getId());
-        if (note != null) {
-            showData();
-            refreshUI();
-        }
+        if (note != null) { showData(); refreshBtn(); }
     }
 }

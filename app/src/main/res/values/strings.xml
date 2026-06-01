@@ -20,4 +20,5 @@
     <string name="edit">编辑</string>
     <string name="upload">同步云端</string>
     <string name="delete">删除</string>
+    <string name="btn_clear_trash">清空回收站</string>
 </resources>

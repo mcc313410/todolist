@@ -8,43 +8,57 @@ import java.util.List;
 
 public class TrashDao {
     private final NoteDBHelper helper;
+    private final Context context; // 新增：保存上下文
 
+    // 修改构造方法，接收并保存Context
     public TrashDao(Context context) {
+        this.context = context;
         helper = new NoteDBHelper(context);
     }
 
+    // 查询所有回收站笔记（关联note表，仅查is_deleted=1的记录）
     public List<TrashBean> getAllTrash() {
         List<TrashBean> list = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();
 
-        String sql = "SELECT t._id, t.note_id, t.delete_time, n.title, n.content " +
-                "FROM trash t LEFT JOIN note n ON t.note_id = n._id";
+        String sql = "SELECT t._id, t.note_id, t.delete_time, n.title, n.content, n.create_time, n.is_top, n.is_collect " +
+                "FROM " + NoteDBHelper.TABLE_TRASH + " t " +
+                "LEFT JOIN " + NoteDBHelper.TABLE_NOTE + " n ON t.note_id = n._id " +
+                "WHERE n." + NoteDBHelper.COL_IS_DELETED + " = 1";
 
-        Cursor c = db.rawQuery(sql, null);
-        while (c.moveToNext()) {
-            TrashBean b = new TrashBean();
-            b.setTrashId(c.getLong(0));
-            b.setNoteId(c.getLong(1));
-            b.setDeleteTime(c.getString(2));
-            b.setTitle(c.getString(3));
-            b.setContent(c.getString(4));
-            list.add(b);
+        Cursor cursor = db.rawQuery(sql, null);
+        while (cursor.moveToNext()) {
+            TrashBean bean = new TrashBean();
+            bean.setTrashId(cursor.getLong(0));
+            bean.setNoteId(cursor.getLong(1));
+            bean.setDeleteTime(cursor.getString(2));
+            bean.setTitle(cursor.getString(3));
+            bean.setContent(cursor.getString(4));
+            bean.setCreateTime(cursor.getString(5));
+            bean.setIsTop(cursor.getInt(6));
+            bean.setIsCollect(cursor.getInt(7));
+            list.add(bean);
         }
-        c.close();
+        cursor.close();
         db.close();
         return list;
     }
 
+    // 恢复笔记：调用NoteDeleteDao的方法
     public void restoreNote(long noteId) {
-        SQLiteDatabase db = helper.getWritableDatabase();
-        db.delete("trash", "note_id=?", new String[]{String.valueOf(noteId)});
-        db.close();
+        // 直接用保存的context
+        new NoteDeleteDao(context).restoreNote(noteId);
     }
 
+    // 永久删除笔记
     public void deleteForever(long noteId) {
+        new NoteDeleteDao(context).deleteForever(noteId);
+    }
+
+    // 一键清空回收站
+    public void clearAllTrash() {
         SQLiteDatabase db = helper.getWritableDatabase();
-        db.delete("note", "_id=?", new String[]{String.valueOf(noteId)});
-        db.delete("trash", "note_id=?", new String[]{String.valueOf(noteId)});
+        db.delete(NoteDBHelper.TABLE_TRASH, null, null);
         db.close();
     }
 }

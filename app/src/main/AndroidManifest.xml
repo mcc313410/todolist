@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.todolist">
 
+    <!-- Bmob 云端必须的网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -14,8 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoList"
+        android:usesCleartextTraffic="true"
         tools:replace="android:label">
 
+        <!-- 主页面 -->
         <activity
             android:name=".ui.activity.NoteListActivity"
             android:exported="true">
@@ -25,12 +28,14 @@
             </intent-filter>
         </activity>
 
+        <!-- 其他页面 -->
         <activity android:name=".ui.activity.NoteAddActivity" />
         <activity android:name=".ui.activity.NoteEditActivity" />
         <activity android:name=".ui.activity.NoteDetailActivity" />
         <activity android:name=".ui.activity.TrashActivity" />
         <activity android:name=".ui.activity.CollectActivity" />
 
+        <!-- Bmob 必须的 Provider 配置 -->
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="${applicationId}.BmobContentProvider"

@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.example.todolist"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -42,10 +42,12 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
+    // Bmob 完整依赖（官方4.2.1 + 必备okio）
     implementation("io.github.bmob:android-sdk:4.2.1")
     implementation("io.reactivex.rxjava3:rxjava:3.1.9")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     implementation("com.squareup.okhttp3:okhttp:4.8.1")
+    implementation("com.squareup.okio:okio:2.2.2")
     implementation("com.google.code.gson:gson:2.8.5")
 
     testImplementation(libs.junit)
