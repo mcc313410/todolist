@@ -83,7 +83,6 @@
                 app:tint="#FFC107"
                 android:contentDescription="@string/collect_star"
                 android:visibility="gone"/>
-
         </LinearLayout>
 
     </LinearLayout>

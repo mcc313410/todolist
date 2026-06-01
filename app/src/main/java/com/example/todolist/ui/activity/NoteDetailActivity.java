@@ -107,10 +107,10 @@ public class NoteDetailActivity extends BaseActivity {
                     note.setObjectId(objectId);
                     note.setSync(true);
                     editDao.update(note);
-                    Toast.makeText(NoteDetailActivity.this, "✅ 同步成功！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NoteDetailActivity.this, "同步成功！", Toast.LENGTH_SHORT).show();
                     showData();
                 } else {
-                    Toast.makeText(NoteDetailActivity.this, "❌ 失败："+e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(NoteDetailActivity.this, "失败："+e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });

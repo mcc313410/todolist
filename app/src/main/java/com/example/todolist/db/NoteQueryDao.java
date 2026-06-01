@@ -14,7 +14,7 @@ public class NoteQueryDao {
         helper = new NoteDBHelper(context);
     }
 
-    // 查询所有未删除的笔记（核心修改：过滤is_deleted=0）
+    // 查询所有未删除的笔记（过滤is_deleted=0）
     public List<NoteEntity> queryAllNotes() {
         List<NoteEntity> list = new ArrayList<>();
         SQLiteDatabase db = helper.getReadableDatabase();

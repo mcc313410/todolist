@@ -108,6 +108,4 @@ public class NoteListActivity extends AppCompatActivity {
             loadNotes();
         }
     }
-
-
 }

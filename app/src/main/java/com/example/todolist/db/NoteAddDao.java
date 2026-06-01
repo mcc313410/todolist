@@ -8,12 +8,10 @@ import com.example.todolist.utils.DateUtil;
 
 public class NoteAddDao {
     private final NoteDBHelper helper;
-
     public NoteAddDao(Context context) {
         helper = new NoteDBHelper(context);
     }
 
-    // 这个 insert 方法就是你报错里缺失的
     public long insert(NoteEntity note) {
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues cv = new ContentValues();

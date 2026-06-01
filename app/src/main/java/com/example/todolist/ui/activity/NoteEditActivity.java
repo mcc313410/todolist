@@ -74,9 +74,9 @@ public class NoteEditActivity extends BaseActivity {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
-                        Toast.makeText(NoteEditActivity.this, "✅ 保存并同步云端成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NoteEditActivity.this, "保存并同步云端成功", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(NoteEditActivity.this, "❌ 云端同步失败", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NoteEditActivity.this, "云端同步失败", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

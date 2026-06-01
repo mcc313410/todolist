@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class NoteDBHelper extends SQLiteOpenHelper {
 
-    // 数据库名和版本（版本号从2升级到3，触发onUpgrade）
     private static final String DB_NAME = "note.db";
     private static final int DB_VERSION = 3;
 
@@ -20,7 +19,6 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public static final String COL_IS_COLLECT = "is_collect";
     public static final String COL_OBJECT_ID = "object_id";
     public static final String COL_IS_SYNC = "is_sync";
-    // 新增：删除标记字段
     public static final String COL_IS_DELETED = "is_deleted";
 
     // 回收站表
@@ -29,7 +27,6 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public static final String COL_TRASH_NOTE_ID = "note_id";
     public static final String COL_TRASH_DELETE_TIME = "delete_time";
 
-    // 创建笔记表 SQL（新增is_deleted字段，默认0）
     private static final String CREATE_TABLE_NOTE =
             "CREATE TABLE " + TABLE_NOTE + " (" +
                     COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +

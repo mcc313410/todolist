@@ -17,7 +17,7 @@ public class NoteDeleteDao {
     // 移入回收站：标记is_deleted=1，加入回收站
     public void deleteToTrash(long noteId) {
         SQLiteDatabase db = helper.getWritableDatabase();
-        db.beginTransaction(); // 开启事务，保证操作原子性
+        db.beginTransaction();
         try {
             // 1. 把笔记加入回收站表
             ContentValues cv = new ContentValues();
@@ -25,7 +25,7 @@ public class NoteDeleteDao {
             cv.put(NoteDBHelper.COL_TRASH_DELETE_TIME, getCurrentTime());
             db.insert(NoteDBHelper.TABLE_TRASH, null, cv);
 
-            // 2. 标记为已删除（核心修改：不再删除note表记录）
+            // 2. 标记为已删除
             ContentValues updateValues = new ContentValues();
             updateValues.put(NoteDBHelper.COL_IS_DELETED, 1);
             db.update(NoteDBHelper.TABLE_NOTE, updateValues,

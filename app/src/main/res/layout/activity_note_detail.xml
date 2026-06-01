@@ -155,7 +155,6 @@
                 android:text="删除笔记"
                 android:backgroundTint="#F43F5E"
                 android:textColor="#FFF"/>
-
         </LinearLayout>
 
     </LinearLayout>

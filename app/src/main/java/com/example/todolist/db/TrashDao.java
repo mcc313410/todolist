@@ -8,9 +8,8 @@ import java.util.List;
 
 public class TrashDao {
     private final NoteDBHelper helper;
-    private final Context context; // 新增：保存上下文
+    private final Context context;
 
-    // 修改构造方法，接收并保存Context
     public TrashDao(Context context) {
         this.context = context;
         helper = new NoteDBHelper(context);
