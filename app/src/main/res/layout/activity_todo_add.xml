@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F7F9FF"
+    android:fitsSystemWindows="true">
+
+    <!-- 返回按钮 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="@string/back"
+            android:padding="10dp"
+            android:onClick="cancelClick"/>
+    </RelativeLayout>
+
+    <!-- 待办标题 -->
+    <EditText
+        android:id="@+id/et_todo_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入待办标题"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/edittext_bg"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="8dp"/>
+
+    <!-- 待办内容 -->
+    <EditText
+        android:id="@+id/et_todo_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="请输入待办详情"
+        android:textSize="16sp"
+        android:gravity="top|start"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edittext_bg"
+        android:padding="12dp"/>
+
+    <TextView
+        android:id="@+id/tv_remind_time"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="点击选择提醒时间"
+        android:textSize="14sp"
+        android:gravity="center_vertical"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/edittext_bg"
+        android:paddingHorizontal="12dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <!-- 新增：重复类型下拉框 -->
+    <Spinner
+        android:id="@+id/sp_repeat_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/repeat_arr"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- 优先级 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="任务优先级"
+        android:textSize="14sp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"/>
+
+    <Spinner
+        android:id="@+id/sp_priority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/priority_arr"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"/>
+
+    <!-- 标签 -->
+    <EditText
+        android:id="@+id/et_tag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="输入任务标签"
+        android:textSize="14sp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/edittext_bg"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="8dp"/>
+
+    <!-- 置顶开关 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="置顶任务"
+            android:textSize="14sp"/>
+
+        <Switch
+            android:id="@+id/sw_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+    <!-- 保存按钮 对应 saveTodoClick -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="保存待办"
+        android:backgroundTint="#425AFE"
+        android:textColor="#FFF"
+        android:textSize="18sp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="20dp"
+        android:onClick="saveTodoClick"/>
+
+</LinearLayout>
