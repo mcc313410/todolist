@@ -21,4 +21,10 @@
     <string name="upload">同步云端</string>
     <string name="delete">删除</string>
     <string name="btn_clear_trash">清空回收站</string>
-</resources>
+    <string name="edit_profile">编辑个人资料</string>
+    <string name="nickname">昵称</string>
+    <string name="hint_nickname">请输入昵称</string>
+    <string name="gender">性别</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    </resources>

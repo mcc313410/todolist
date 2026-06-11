@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+
 }
 
 android {
@@ -41,7 +42,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     // Bmob 完整依赖（官方4.2.1 + 必备okio）
     implementation("io.github.bmob:android-sdk:4.2.1")
     implementation("io.reactivex.rxjava3:rxjava:3.1.9")
