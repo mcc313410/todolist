@@ -3,19 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.todolist">
 
-    <!-- 原有网络权限 -->
+    <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 保留旧权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <!-- 新增 Android 13+ 图片权限 -->
+    <!-- 低版本存储权限，仅Android12及以下生效 -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- Android13+ 媒体图片权限 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
-    <!-- 告诉系统我们兼容新版本 -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-    <!-- 通知、精准闹钟、震动、锁屏唤醒（定时提醒必备） -->
+
+    <!-- 通知、闹钟、提醒必备权限 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -32,7 +36,7 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:label">
 
-        <!-- 所有 Activity 完整保留 -->
+        <!-- Todo相关页面 -->
         <activity
             android:name=".ui.activity.TodoArchiveActivity"
             android:exported="false" />
@@ -46,6 +50,7 @@
             android:name=".ui.activity.TodoAddActivity"
             android:exported="false" />
 
+        <!-- 启动首页 -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -55,24 +60,47 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.NoteListActivity" />
-        <activity android:name=".ui.activity.NoteAddActivity" />
-        <activity android:name=".ui.activity.NoteEditActivity" />
-        <activity android:name=".ui.activity.NoteDetailActivity" />
-        <activity android:name=".ui.activity.TrashActivity" />
-        <activity android:name=".ui.activity.CollectActivity" />
+        <!-- 笔记模块页面 -->
+        <activity
+            android:name=".ui.activity.NoteListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.NoteAddActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.NoteEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.NoteDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.TrashActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.CollectActivity"
+            android:exported="false" />
 
-        <activity android:name=".ui.activity.MineActivity" />
-        <activity android:name=".ui.activity.LoginActivity"/>
-        <activity android:name=".ui.activity.RegisterActivity"/>
-        <activity android:name=".ui.activity.EditUserInfoActivity"/>
-        <!-- Bmob 内容提供者 保留 -->
+        <!-- 新增用户登录注册模块页面，补齐exported -->
+        <activity
+            android:name=".ui.activity.MineActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activity.EditUserInfoActivity"
+            android:exported="false" />
+
+        <!-- Bmob内容提供者 -->
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
             android:authorities="${applicationId}.BmobContentProvider"
             android:exported="false" />
 
-        <!-- 定时提醒广播接收器（使用你现有的 TodoAlarmReceiver） -->
+        <!-- 闹钟广播接收器 -->
         <receiver
             android:name=".receiver.TodoAlarmReceiver"
             android:enabled="true"
