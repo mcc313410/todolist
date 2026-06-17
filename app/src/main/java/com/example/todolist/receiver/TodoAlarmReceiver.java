@@ -21,22 +21,25 @@ public class TodoAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // 1. 基础参数解析 + 合法性校验
+        // 1. 正确顺序：先取值，后使用
         int todoId = intent.getIntExtra("todo_id", -1);
         String todoTitle = intent.getStringExtra("todo_title");
         int repeatType = intent.getIntExtra("repeat_type", 0);
         long nextTime = intent.getLongExtra("next_time", 0);
 
-        // 无效任务直接返回
+        // 打印日志方便调试
+        Log.d(TAG, "onReceive 被调用，todoId=" + todoId + ", title=" + todoTitle + ", repeatType=" + repeatType);
+
+        // 2. 校验数据有效性
         if (todoId == -1 || todoTitle == null || todoTitle.isEmpty()) {
             Log.e(TAG, "无效待办任务，取消提醒");
             return;
         }
 
-        // 2. 弹出系统通知
+        // 3. 弹出通知
         sendNotification(context, todoId, todoTitle);
 
-        // 3. 重复提醒：设置下一次闹钟
+        // 4. 如果是重复提醒，安排下一次闹钟
         if (repeatType != 0) {
             AlarmUtil.setRepeatAlarm(context, todoId, repeatType, nextTime);
         }
@@ -82,16 +85,15 @@ public class TodoAlarmReceiver extends BroadcastReceiver {
             );
         }
 
-        // 通知构建：使用系统自带图标，避免找不到图闪退
+        // 使用系统默认图标，避免资源缺失
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_menu_recent_history) // 系统默认图标，无需额外资源
+                .setSmallIcon(android.R.drawable.ic_menu_recent_history)
                 .setContentTitle("待办提醒")
                 .setContentText(title)
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true) // 点击通知自动消失
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        // 弹出通知
         manager.notify(todoId, builder.build());
     }
 }

@@ -1,10 +1,20 @@
 package com.example.todolist.ui.activity;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -39,6 +49,7 @@ public class TodoAddActivity extends BaseActivity {
     // 时间变量
     private long mDeadlineTime = 0;
     private final Calendar mCalendar = Calendar.getInstance();
+    private DatePickerDialog mDatePickerDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +65,7 @@ public class TodoAddActivity extends BaseActivity {
         spPriority = findViewById(R.id.sp_priority);
         etTag = findViewById(R.id.et_tag);
         swTop = findViewById(R.id.sw_top);
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
         // 接收编辑ID
         mTodoId = getIntent().getIntExtra("todo_id", -1);
@@ -82,23 +94,50 @@ public class TodoAddActivity extends BaseActivity {
 
         // ========== 新增这一行：绑定点击事件 ==========
         tvRemindTime.setOnClickListener(v -> selectRemindTime(v));
+
+        // 请求必要的权限（通知和精确闹钟）
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            if (!alarmManager.canScheduleExactAlarms()) {
+                // 引导用户去设置中开启精确闹钟权限
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
+        }
+
     }
 
+
+
     public void selectRemindTime(View view) {
-        // 每次点击新建临时日历，不共用全局变量，避免错乱
+        Toast.makeText(this, "点击了", Toast.LENGTH_SHORT).show();
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         Calendar tempCal = Calendar.getInstance();
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                android.R.style.Theme_DeviceDefault_Dialog,
                 (dp, year, month, day) -> {
                     tempCal.set(year, month, day);
-                    // 选完日期，弹出时间选择
-                    TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                    // 时间选择器同样使用系统默认主题
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(
+                            this,
+                            android.R.style.Theme_DeviceDefault_Dialog,  // ← 统一主题
                             (tp, hour, minute) -> {
                                 tempCal.set(Calendar.HOUR_OF_DAY, hour);
                                 tempCal.set(Calendar.MINUTE, minute);
                                 tempCal.set(Calendar.SECOND, 0);
-
-                                // 赋值给全局时间变量
                                 mDeadlineTime = tempCal.getTimeInMillis();
                                 mCalendar.setTimeInMillis(mDeadlineTime);
                                 tvRemindTime.setText(formatTime(mCalendar));
@@ -111,9 +150,17 @@ public class TodoAddActivity extends BaseActivity {
                 },
                 tempCal.get(Calendar.YEAR),
                 tempCal.get(Calendar.MONTH),
-                tempCal.get(Calendar.DAY_OF_MONTH));
+                tempCal.get(Calendar.DAY_OF_MONTH)
+        );
 
-        datePickerDialog.show();
+        view.postDelayed(() -> {
+            try {
+                datePickerDialog.show();
+                Log.e("TODO_DEBUG", "show() 执行成功");
+            } catch (Exception e) {
+                Log.e("TODO_DEBUG", "show() 出错", e);
+            }
+        }, 300);
     }
 
     // 时间格式化

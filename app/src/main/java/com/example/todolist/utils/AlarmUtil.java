@@ -17,9 +17,6 @@ import java.util.Calendar;
 public class AlarmUtil {
     private static final String TAG = "AlarmUtil";
 
-    /**
-     * 设置单次到期提醒闹钟
-     */
     public static void setAlarm(Context context, TodoEntity todo) {
         if (todo == null || todo.getDeadlineTime() <= System.currentTimeMillis()) {
             Log.e(TAG, "时间已过期，不设置闹钟");
@@ -35,29 +32,25 @@ public class AlarmUtil {
 
         PendingIntent pendingIntent = getBroadcastPendingIntent(context, todo.getId(), intent);
 
-        // 区分版本设置精准闹钟
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    todo.getDeadlineTime(),
-                    pendingIntent
-            );
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, todo.getDeadlineTime(), pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, todo.getDeadlineTime(), pendingIntent);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, todo.getDeadlineTime(), pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, todo.getDeadlineTime(), pendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, todo.getDeadlineTime(), pendingIntent);
+            }
+            Log.d(TAG, "闹钟设置成功，触发时间=" + todo.getDeadlineTime());
+        } catch (SecurityException e) {
+            Log.e(TAG, "设置精确闹钟失败，请授予 SCHEDULE_EXACT_ALARM 权限", e);
         }
     }
 
-    /**
-     * 设置重复闹钟（每日/每周/每月）
-     */
     public static void setRepeatAlarm(Context context, int todoId, int repeatType, long currentTime) {
         long nextTime = calculateNextTime(currentTime, repeatType);
         TodoEntity todo = TodoQueryDao.getInstance(context).queryTodoById(todoId);
         if (todo == null) return;
 
-        // 更新下一次提醒时间到数据库
         todo.setDeadlineTime(nextTime);
         TodoEditDao.getInstance(context).updateTodo(todo);
 
@@ -70,52 +63,41 @@ public class AlarmUtil {
 
         PendingIntent pendingIntent = getBroadcastPendingIntent(context, todoId, intent);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextTime, pendingIntent);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextTime, pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, nextTime, pendingIntent);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextTime, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, nextTime, pendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, nextTime, pendingIntent);
+            }
+            Log.d(TAG, "重复闹钟设置成功，下次触发=" + nextTime);
+        } catch (SecurityException e) {
+            Log.e(TAG, "设置重复闹钟失败", e);
         }
     }
 
-    /**
-     * 取消指定任务闹钟（删除/编辑任务时调用）
-     */
     public static void cancelAlarm(Context context, int todoId) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, TodoAlarmReceiver.class);
         PendingIntent pendingIntent = getBroadcastPendingIntent(context, todoId, intent);
         alarmManager.cancel(pendingIntent);
         pendingIntent.cancel();
+        Log.d(TAG, "闹钟已取消，todoId=" + todoId);
     }
 
-    /**
-     * 计算下一次提醒时间
-     * 0:不重复 1:每天 2:每周 3:每月
-     */
     private static long calculateNextTime(long currentTime, int repeatType) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(currentTime);
         switch (repeatType) {
-            case 1:
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
-                break;
-            case 2:
-                calendar.add(Calendar.WEEK_OF_YEAR, 1);
-                break;
-            case 3:
-                calendar.add(Calendar.MONTH, 1);
-                break;
-            default:
-                return currentTime;
+            case 1: calendar.add(Calendar.DAY_OF_YEAR, 1); break;
+            case 2: calendar.add(Calendar.WEEK_OF_YEAR, 1); break;
+            case 3: calendar.add(Calendar.MONTH, 1); break;
+            default: return currentTime;
         }
         return calendar.getTimeInMillis();
     }
 
-    /**
-     * 统一获取广播 PendingIntent，兼容全版本
-     */
     private static PendingIntent getBroadcastPendingIntent(Context context, int requestCode, Intent intent) {
         int flag;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
