@@ -3,25 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F7F9FF"
+    android:background="#F5F7FA"
     android:fitsSystemWindows="true">
-
-    <!-- 返回按钮 -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp">
-
         <ImageView
             android:id="@+id/ivBack"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:src="@android:drawable/ic_menu_revert"
             android:contentDescription="@string/back"
-            android:padding="10dp" />
+            android:padding="10dp"/>
     </RelativeLayout>
-
-    <!-- 待办标题 -->
     <EditText
         android:id="@+id/et_todo_title"
         android:layout_width="match_parent"
@@ -31,11 +26,11 @@
         android:textStyle="bold"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/edittext_bg"
         android:paddingVertical="12dp"
-        android:paddingHorizontal="8dp"/>
-
-    <!-- 待办内容 -->
+        android:paddingHorizontal="8dp"
+        android:background="#FFFFFF"
+        android:textColor="#1A1A1A"
+        android:textColorHint="#707070"/>
     <EditText
         android:id="@+id/et_todo_content"
         android:layout_width="match_parent"
@@ -46,9 +41,10 @@
         android:gravity="top|start"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/edittext_bg"
-        android:padding="12dp"/>
-
+        android:padding="12dp"
+        android:background="#FFFFFF"
+        android:textColor="#1A1A1A"
+        android:textColorHint="#707070"/>
     <TextView
         android:id="@+id/tv_remind_time"
         android:layout_width="match_parent"
@@ -57,40 +53,39 @@
         android:textSize="14sp"
         android:gravity="center_vertical"
         android:layout_marginHorizontal="16dp"
-        android:background="@drawable/edittext_bg"
         android:paddingHorizontal="12dp"
+        android:background="#FFFFFF"
+        android:textColor="#4E5969"
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:foreground="?attr/selectableItemBackgroundBorderless"/> <!-- 新增按压波纹 -->
-
-    <!-- 新增：重复类型下拉框 -->
+        android:foreground="?attr/selectableItemBackgroundBorderless"/>
     <Spinner
         android:id="@+id/sp_repeat_type"
+        android:entries="@array/repeat_arr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/repeat_arr"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"/>
-
-    <!-- 优先级 -->
+        android:layout_marginTop="8dp"
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="任务优先级"
         android:textSize="14sp"
         android:layout_marginHorizontal="16dp"
+        android:textColor="#1A1A1A"
         android:layout_marginTop="12dp"/>
-
     <Spinner
         android:id="@+id/sp_priority"
+        android:entries="@array/priority_arr"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/priority_arr"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="4dp"/>
-
-    <!-- 标签 -->
+        android:layout_marginTop="4dp"
+        android:background="#FFFFFF"
+        android:padding="10dp"/>
     <EditText
         android:id="@+id/et_tag"
         android:layout_width="match_parent"
@@ -99,11 +94,11 @@
         android:textSize="14sp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp"
-        android:background="@drawable/edittext_bg"
         android:paddingVertical="10dp"
-        android:paddingHorizontal="8dp"/>
-
-    <!-- 置顶开关 -->
+        android:paddingHorizontal="8dp"
+        android:background="#FFFFFF"
+        android:textColor="#1A1A1A"
+        android:textColorHint="#707070"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -111,21 +106,18 @@
         android:gravity="center_vertical"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="12dp">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="置顶任务"
-            android:textSize="14sp"/>
-
+            android:textSize="14sp"
+            android:textColor="#1A1A1A"/>
         <Switch
             android:id="@+id/sw_top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
-
-    <!-- 保存按钮 对应 saveTodoClick -->
     <Button
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -136,5 +128,4 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="20dp"
         android:onClick="saveTodoClick"/>
-
 </LinearLayout>

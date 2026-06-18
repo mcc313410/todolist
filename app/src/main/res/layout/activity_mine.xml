@@ -6,35 +6,31 @@
     android:padding="24dp"
     android:background="#F5F7FA"
     android:gravity="center_horizontal">
-
-    <!-- 头像 -->
     <ImageView
         android:id="@+id/iv_avatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@mipmap/ic_launcher"
         android:scaleType="centerCrop"
-        android:background="@drawable/ic_launcher_background"
+        android:background="#FFFFFF"
         android:padding="2dp"/>
-
-    <!-- 用户名/昵称（去掉了默认的“欢迎你”，直接显示昵称） -->
     <TextView
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#1A1A1A"
         android:layout_marginTop="16dp"/>
-
-    <!-- 编辑资料按钮 -->
     <Button
         android:id="@+id/btn_edit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
         android:text="编辑个人资料"
-        android:layout_marginTop="12dp"/>
-
-    <!-- 数据统计区域 -->
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#425AFE"
+        android:textColor="#FFFFFF"
+        android:paddingHorizontal="14dp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -43,21 +39,19 @@
         android:padding="16dp"
         android:layout_marginTop="30dp"
         android:elevation="2dp">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="数据统计"
             android:textSize="18sp"
-            android:textStyle="bold"/>
-
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="16dp"
             android:gravity="center">
-
             <LinearLayout
                 android:id="@+id/ll_note_box"
                 android:layout_width="0dp"
@@ -65,48 +59,52 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
+                <!-- 修复：补全宽高 -->
                 <TextView
                     android:id="@+id/tv_note_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="22sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="#425AFE"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="笔记总数"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp"
+                    android:textColor="#4E5969"/>
             </LinearLayout>
-
             <LinearLayout
+                android:id="@+id/ll_finish_rate"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
+                <!-- 修复：补全宽高 -->
                 <TextView
                     android:id="@+id/tv_finish_rate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0%"
                     android:textSize="22sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="#27AE60"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="任务完成率"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp"
+                    android:textColor="#4E5969"/>
             </LinearLayout>
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="16dp"
             android:gravity="center">
-
             <LinearLayout
                 android:id="@+id/ll_overdue_box"
                 android:layout_width="0dp"
@@ -114,20 +112,22 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
+                <!-- 修复：补全宽高 -->
                 <TextView
                     android:id="@+id/tv_overdue_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="22sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="#F43F5E"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="逾期任务"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp"
+                    android:textColor="#4E5969"/>
             </LinearLayout>
-
             <LinearLayout
                 android:id="@+id/ll_today_task_box"
                 android:layout_width="0dp"
@@ -135,30 +135,30 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
+                <!-- 修复：补全宽高 -->
                 <TextView
                     android:id="@+id/tv_today_task"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="22sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="#F49D2C"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="今日待办"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp"
+                    android:textColor="#4E5969"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
-    <!-- 退出登录 -->
     <Button
         android:id="@+id/btn_logout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="退出登录"
-        android:background="#FF4444"
+        android:backgroundTint="#F43F5E"
         android:textColor="#FFFFFF"
         android:layout_marginTop="30dp"/>
-
 </LinearLayout>

@@ -3,15 +3,14 @@
     <!-- 优先级数组 -->
     <string-array name="priority_arr">
         <item>普通</item>
-        <item>一般</item>
+        <item>重要</item>
         <item>紧急</item>
     </string-array>
-
     <!-- 重复类型数组 -->
     <string-array name="repeat_arr">
         <item>不重复</item>
-        <item>每天重复</item>
-        <item>每周重复</item>
-        <item>每月重复</item>
+        <item>每日</item>
+        <item>每周</item>
+        <item>每月</item>
     </string-array>
 </resources>

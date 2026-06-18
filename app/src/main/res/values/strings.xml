@@ -1,30 +1,30 @@
 <resources>
-    <string name="app_name">笔记</string>
+    <string name="app_name">简记</string>
     <string name="back">返回</string>
     <string name="trash">回收站</string>
     <string name="clear">清空</string>
-    <string name="trash_empty">回收站为空</string>
-    <string name="trash_empty_hint">回收站为空</string>
+    <string name="trash_empty">暂无删除内容</string>
+    <string name="trash_empty_hint">删除的笔记、任务保存在这里</string>
     <string name="my_notes">我的笔记</string>
     <string name="collect">收藏</string>
     <string name="collect_notes">收藏笔记</string>
-    <string name="search_hint">搜索笔记...</string>
-    <string name="empty_hint">暂无笔记，点击右下角添加吧～</string>
+    <string name="search_hint">搜索标题、内容</string>
+    <string name="empty_hint">暂无笔记，点击右下角新建</string>
     <string name="new_note">新建笔记</string>
     <string name="title_hint">标题</string>
-    <string name="content_hint">输入内容...</string>
+    <string name="content_hint">记录内容…</string>
     <string name="save">保存</string>
     <string name="collect_star">收藏标记</string>
     <string name="top">置顶</string>
     <string name="empty_collect_hint">暂无收藏笔记</string>
     <string name="edit">编辑</string>
-    <string name="upload">同步云端</string>
+    <string name="upload">云端同步</string>
     <string name="delete">删除</string>
-    <string name="btn_clear_trash">清空回收站</string>
-    <string name="edit_profile">编辑个人资料</string>
+    <string name="btn_clear_trash">一键清空回收站</string>
+    <string name="edit_profile">资料编辑</string>
     <string name="nickname">昵称</string>
-    <string name="hint_nickname">请输入昵称</string>
+    <string name="hint_nickname">填写昵称</string>
     <string name="gender">性别</string>
     <string name="male">男</string>
     <string name="female">女</string>
-    </resources>
+</resources>

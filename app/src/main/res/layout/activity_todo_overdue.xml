@@ -3,38 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F8F8F8">
-
-    <!-- 顶部标题栏 -->
+    android:background="#F5F7FA">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:background="#FFFFFF">
-
         <ImageView
             android:id="@+id/iv_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_back"/>
-
+            android:src="@android:drawable/ic_menu_revert"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="逾期任务"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="#1A1A1A"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
-
-    <!-- 纯文本展示所有逾期任务 -->
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
         android:textSize="15sp"
-        android:textColor="#333333"/>
-
+        android:textColor="#4E5969"/>
 </LinearLayout>

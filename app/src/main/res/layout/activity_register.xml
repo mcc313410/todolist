@@ -4,36 +4,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:gravity="center">
-
+    android:gravity="center"
+    android:background="#F5F7FA">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="注册账号"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A1A"
+        android:layout_marginBottom="32dp"/>
     <EditText
         android:id="@+id/et_username"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:hint="请输入账号"
         android:inputType="text"
-        android:layout_marginBottom="16dp"/>
-
+        android:layout_marginBottom="16dp"
+        android:paddingHorizontal="16dp"
+        android:background="#FFFFFF"
+        android:textSize="16sp"
+        android:textColor="#1A1A1A"
+        android:textColorHint="#707070"/>
     <EditText
         android:id="@+id/et_password"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:hint="请输入密码"
         android:inputType="textPassword"
-        android:layout_marginBottom="16dp"/>
-
+        android:layout_height="48dp"
+        android:layout_marginBottom="16dp"
+        android:paddingHorizontal="16dp"
+        android:background="#FFFFFF"
+        android:textSize="16sp"
+        android:textColor="#1A1A1A"
+        android:textColorHint="#707070"/>
     <EditText
         android:id="@+id/et_confirm_pwd"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:hint="请确认密码"
         android:inputType="textPassword"
-        android:layout_marginBottom="24dp"/>
-
+        android:layout_marginBottom="24dp"
+        android:paddingHorizontal="16dp"
+        android:background="#FFFFFF"
+        android:textSize="16sp"
+        android:textColor="#1A1A1A"
+        android:textColorHint="#707070"/>
     <Button
         android:id="@+id/btn_register"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="注册"/>
-
+        android:layout_height="50dp"
+        android:text="注册"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#425AFE"
+        android:textSize="18sp"/>
 </LinearLayout>

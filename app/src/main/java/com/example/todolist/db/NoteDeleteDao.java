@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone; // 新增导入
 
 public class NoteDeleteDao {
     private final NoteDBHelper helper;
@@ -16,13 +17,15 @@ public class NoteDeleteDao {
 
     // 移入回收站：标记is_deleted=1，加入回收站
     public void deleteToTrash(long noteId) {
+        // 进入方法立刻获取删除时间，不等到插入时再生成
+        String deleteTime = getCurrentTime();
         SQLiteDatabase db = helper.getWritableDatabase();
         db.beginTransaction();
         try {
             // 1. 把笔记加入回收站表
             ContentValues cv = new ContentValues();
             cv.put(NoteDBHelper.COL_TRASH_NOTE_ID, noteId);
-            cv.put(NoteDBHelper.COL_TRASH_DELETE_TIME, getCurrentTime());
+            cv.put(NoteDBHelper.COL_TRASH_DELETE_TIME, deleteTime); // 使用提前拿到的时间
             db.insert(NoteDBHelper.TABLE_TRASH, null, cv);
 
             // 2. 标记为已删除
@@ -79,8 +82,11 @@ public class NoteDeleteDao {
         }
     }
 
+    // 强制北京时间时区，解决时差8小时问题
     private String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        // 固定东八区上海时区，不受设备系统时区切换影响
+        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         return sdf.format(new Date());
     }
 }
