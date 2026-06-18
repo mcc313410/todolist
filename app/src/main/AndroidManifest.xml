@@ -28,9 +28,9 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/tubiao"
         android:label="待办事项App"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/tubiao"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoList"
         android:usesCleartextTraffic="true"
