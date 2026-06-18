@@ -210,7 +210,7 @@ public class MineActivity extends AppCompatActivity {
     }
 
     // ------------------------------
-    // 图片裁剪（保留方法不删除，仅不再调用）
+    // 图片裁剪
     // ------------------------------
     private void cropImage(Uri uri) {
         try {
