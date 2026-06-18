@@ -59,6 +59,7 @@
             android:gravity="center">
 
             <LinearLayout
+                android:id="@+id/ll_note_box"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -107,6 +108,7 @@
             android:gravity="center">
 
             <LinearLayout
+                android:id="@+id/ll_overdue_box"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
@@ -127,6 +129,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_today_task_box"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"

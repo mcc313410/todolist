@@ -149,4 +149,133 @@ public class TodoQueryDao {
         todo.setRepeatType(cursor.getInt(cursor.getColumnIndexOrThrow(TodoDBHelper.COLUMN_REPEAT_TYPE)));
         return todo;
     }
+
+    /**
+     * 获取全部未归档任务总数
+     */
+    public int getAllUnArchiveTodoCount() {
+        int count = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0", null);
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    /**
+     * 获取已完成、未归档任务数量
+     */
+    public int getCompletedUnArchiveTodoCount() {
+        int count = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 1", null);
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    /**
+     * 获取今日截止、未完成、未归档任务数量（今日待办）
+     * @param todayStartMillis 今日0点时间戳
+     * @param tomorrowStartMillis 明日0点时间戳
+     */
+    public int getTodayUnCompleteTodoCount(long todayStartMillis, long tomorrowStartMillis) {
+        int count = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
+                + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 "
+                + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 0 "
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " >= ? "
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayStartMillis), String.valueOf(tomorrowStartMillis)});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    /**
+     * 获取截止时间早于今天、未完成、未归档任务数量（逾期任务）
+     * @param todayStartMillis 今日0点时间戳
+     */
+    public int getOverdueUnCompleteTodoCount(long todayStartMillis) {
+        int count = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
+                + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 "
+                + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 0 "
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayStartMillis)});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+    /**
+     * 查询今日所有任务（包含归档、全部状态）
+     * @param todayZero 今日0点时间戳
+     * @param tomorrowZero 明日0点时间戳
+     */
+    public int getAllTodayTodoCount(long todayZero, long tomorrowZero) {
+        int count = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
+                + " WHERE " + TodoDBHelper.COLUMN_DEADLINE_TIME + " >= ? "
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayZero), String.valueOf(tomorrowZero)});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    /**
+     * 查询今日已完成任务（包含归档）
+     * @param todayZero 今日0点时间戳
+     * @param tomorrowZero 明日0点时间戳
+     */
+    public int getCompletedTodayTodoCount(long todayZero, long tomorrowZero) {
+        int count = 0;
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
+                + " WHERE " + TodoDBHelper.COLUMN_DEADLINE_TIME + " >= ? "
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ? "
+                + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 1";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayZero), String.valueOf(tomorrowZero)});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        db.close();
+        return count;
+    }
+    /**
+     * 查询全部逾期任务（包含归档，未完成，截止时间早于今日0点）
+     */
+    public List<TodoEntity> getAllOverdueTodo(long todayZeroMillis) {
+        List<TodoEntity> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT * FROM " + TodoDBHelper.TABLE_TODO
+                + " WHERE " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 0 "
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayZeroMillis)});
+        while (cursor.moveToNext()) {
+            list.add(cursorToEntity(cursor));
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
 }
