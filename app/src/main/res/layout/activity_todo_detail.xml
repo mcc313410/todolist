@@ -14,7 +14,6 @@
         android:src="@android:drawable/ic_menu_revert"
         android:contentDescription="@string/back"
         android:padding="10dp"
-        android:onClick="finish"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 

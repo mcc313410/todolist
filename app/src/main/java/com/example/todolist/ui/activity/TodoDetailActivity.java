@@ -22,6 +22,7 @@ public class TodoDetailActivity extends BaseActivity {
     private int mTodoId;
     private TodoEntity mTodo;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +30,7 @@ public class TodoDetailActivity extends BaseActivity {
 
         tvTitle = findViewById(R.id.tv_detail_title);
         tvContent = findViewById(R.id.tv_detail_content);
+        findViewById(R.id.ivBack).setOnClickListener(v -> finish());
 
         mTodoId = getIntent().getIntExtra("todo_id", -1);
         loadTodoData();
