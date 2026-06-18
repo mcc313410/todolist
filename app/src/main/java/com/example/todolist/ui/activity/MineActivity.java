@@ -18,8 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import android.widget.LinearLayout;
-import android.content.Intent;
 import com.bumptech.glide.Glide;
 import com.example.todolist.R;
 import com.example.todolist.db.NoteQueryDao;
@@ -38,10 +36,9 @@ import java.util.Locale;
 import cn.bmob.v3.BmobUser;
 import com.example.todolist.db.TodoQueryDao;
 import com.example.todolist.utils.DateUtil;
-import android.widget.LinearLayout;
-import android.content.Intent;
 import com.example.todolist.ui.activity.NoteListActivity;
 import com.example.todolist.ui.activity.TodoListActivity;
+import com.example.todolist.ui.activity.TodoOverdueActivity;
 
 public class MineActivity extends AppCompatActivity {
 
@@ -80,7 +77,7 @@ public class MineActivity extends AppCompatActivity {
 
         loadUserInfo();
 
-        // 点击头像 → 权限 → 相册 → 裁剪
+        // 点击头像 → 权限 → 相册
         ivAvatar.setOnClickListener(v -> openImagePermission());
 
         btnEdit.setOnClickListener(v -> {
@@ -105,7 +102,7 @@ public class MineActivity extends AppCompatActivity {
             startActivity(new Intent(MineActivity.this, NoteListActivity.class));
         });
 
-// 今日待办点击跳转待办列表
+        // 今日待办点击跳转待办列表
         llTodayTaskBox = findViewById(R.id.ll_today_task_box);
         llTodayTaskBox.setOnClickListener(v -> {
             startActivity(new Intent(MineActivity.this, TodoListActivity.class));
@@ -203,6 +200,7 @@ public class MineActivity extends AppCompatActivity {
         }
         tvFinishRate.setText(finishRate + "%");
     }
+
     // ------------------------------
     // 打开相册
     // ------------------------------
@@ -212,7 +210,7 @@ public class MineActivity extends AppCompatActivity {
     }
 
     // ------------------------------
-    // 图片裁剪
+    // 图片裁剪（保留方法不删除，仅不再调用）
     // ------------------------------
     private void cropImage(Uri uri) {
         try {
@@ -249,12 +247,15 @@ public class MineActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            // 相册选图成功 → 进入裁剪
+            // 相册选图成功，直接处理原图，跳过裁剪流程
             if (requestCode == REQUEST_CODE_ALBUM && data != null) {
                 Uri uri = data.getData();
-                if (uri != null) cropImage(uri);
+                if (uri != null) {
+                    handleCropImage(uri);
+                    Toast.makeText(this, "头像更换成功", Toast.LENGTH_SHORT).show();
+                }
             }
-            // 裁剪成功 → 压缩并保存到本地
+            // 裁剪分支保留，兼容以后恢复裁剪功能
             else if (requestCode == REQUEST_CODE_CROP) {
                 handleCropImage(tempCropUri);
             }
@@ -262,7 +263,7 @@ public class MineActivity extends AppCompatActivity {
     }
 
     // ------------------------------
-    // 处理裁剪后的图片：压缩 + 保存到本地 + 缓存路径
+    // 处理图片：压缩 + 保存到本地 + 缓存路径
     // ------------------------------
     private void handleCropImage(Uri uri) {
         InputStream inputStream = null;
@@ -270,7 +271,7 @@ public class MineActivity extends AppCompatActivity {
             inputStream = getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             if (bitmap == null) {
-                Toast.makeText(this, "裁剪图片解析失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "图片解析失败", Toast.LENGTH_SHORT).show();
                 return;
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -290,7 +291,6 @@ public class MineActivity extends AppCompatActivity {
 
         } catch (IOException e) {
             e.printStackTrace();
-            // 打印完整异常，方便看日志定位问题
             Toast.makeText(this, "头像修改失败：" + e.getMessage(), Toast.LENGTH_LONG).show();
         } finally {
             try {
