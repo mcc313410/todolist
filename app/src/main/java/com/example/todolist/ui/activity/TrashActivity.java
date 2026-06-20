@@ -2,7 +2,6 @@ package com.example.todolist.ui.activity;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -10,7 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.todolist.R;
-import com.example.todolist.db.TrashBean;
+import com.example.todolist.entity.TrashBean;
 import com.example.todolist.db.TrashDao;
 import com.example.todolist.ui.adapter.TrashAdapter;
 import java.util.List;

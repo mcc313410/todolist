@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.example.todolist.R;
-import com.example.todolist.db.TrashBean;
+import com.example.todolist.entity.TrashBean;
 import java.util.List;
 
 public class TrashAdapter extends BaseAdapter {

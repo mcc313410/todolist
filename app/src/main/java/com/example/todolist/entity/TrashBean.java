@@ -1,4 +1,4 @@
-package com.example.todolist.db;
+package com.example.todolist.entity;
 
 public class TrashBean {
     private long trashId;       // 回收站ID

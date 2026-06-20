@@ -3,6 +3,9 @@ package com.example.todolist.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.todolist.entity.TrashBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
