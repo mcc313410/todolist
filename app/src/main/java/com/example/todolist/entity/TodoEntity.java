@@ -131,4 +131,13 @@ public class TodoEntity {
     public void setTitle(String title) {
         this.title = title;
     }
+    private String userId;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

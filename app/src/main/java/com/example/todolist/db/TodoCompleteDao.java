@@ -3,7 +3,6 @@ package com.example.todolist.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import com.example.todolist.db.TodoDBHelper;
 
 public class TodoCompleteDao {
     private static TodoCompleteDao instance;

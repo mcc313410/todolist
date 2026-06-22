@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.example.todolist.entity.TodoEntity;
+import com.example.todolist.utils.SPUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +28,13 @@ public class TodoQueryDao {
      */
     public TodoEntity queryTodoById(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = TodoDBHelper.COLUMN_ID + " = ? AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        String[] args = new String[]{String.valueOf(id), SPUtil.getCurrentUserId()};
         Cursor cursor = db.query(
                 TodoDBHelper.TABLE_TODO,
                 null,
-                TodoDBHelper.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(id)},
+                selection,
+                args,
                 null, null, null
         );
         TodoEntity todo = null;
@@ -50,11 +53,13 @@ public class TodoQueryDao {
     public List<TodoEntity> queryAllUnArchiveTodo() {
         List<TodoEntity> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = TodoDBHelper.COLUMN_IS_ARCHIVED + " = ? AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        String[] args = new String[]{"0", SPUtil.getCurrentUserId()};
         Cursor cursor = db.query(
                 TodoDBHelper.TABLE_TODO,
                 null,
-                TodoDBHelper.COLUMN_IS_ARCHIVED + " = ?",
-                new String[]{"0"},
+                selection,
+                args,
                 null, null,
                 TodoDBHelper.COLUMN_IS_TOP + " DESC, " + TodoDBHelper.COLUMN_CREATE_TIME + " DESC"
         );
@@ -72,11 +77,13 @@ public class TodoQueryDao {
     public List<TodoEntity> queryAllArchiveTodo() {
         List<TodoEntity> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = TodoDBHelper.COLUMN_IS_ARCHIVED + " = ? AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        String[] args = new String[]{"1", SPUtil.getCurrentUserId()};
         Cursor cursor = db.query(
                 TodoDBHelper.TABLE_TODO,
                 null,
-                TodoDBHelper.COLUMN_IS_ARCHIVED + " = ?",
-                new String[]{"1"},
+                selection,
+                args,
                 null, null,
                 TodoDBHelper.COLUMN_CREATE_TIME + " DESC"
         );
@@ -104,14 +111,14 @@ public class TodoQueryDao {
         }
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // 查询条件：未归档 并且 标题或内容包含关键词
+        // 查询条件：未归档 并且 标题或内容包含关键词 并且属于当前用户
         String selection = TodoDBHelper.COLUMN_IS_ARCHIVED + " = ? "
                 + " AND ("
                 + TodoDBHelper.COLUMN_TITLE + " LIKE ? "
                 + " OR "
                 + TodoDBHelper.COLUMN_CONTENT + " LIKE ?"
-                + ")";
-        String[] args = {"0", "%" + key + "%", "%" + key + "%"};
+                + ") AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        String[] args = {"0", "%" + key + "%", "%" + key + "%", SPUtil.getCurrentUserId()};
 
         Cursor cursor = db.query(
                 TodoDBHelper.TABLE_TODO,
@@ -131,7 +138,7 @@ public class TodoQueryDao {
     }
 
     /**
-     * Cursor 转 TodoEntity（完全对齐 DB 字段常量，不会报字段异常）
+     * Cursor 转 TodoEntity（读取userId字段）
      */
     private TodoEntity cursorToEntity(Cursor cursor) {
         TodoEntity todo = new TodoEntity();
@@ -147,6 +154,8 @@ public class TodoQueryDao {
         todo.setTop(cursor.getInt(cursor.getColumnIndexOrThrow(TodoDBHelper.COLUMN_IS_TOP)) == 1);
         todo.setArchived(cursor.getInt(cursor.getColumnIndexOrThrow(TodoDBHelper.COLUMN_IS_ARCHIVED)) == 1);
         todo.setRepeatType(cursor.getInt(cursor.getColumnIndexOrThrow(TodoDBHelper.COLUMN_REPEAT_TYPE)));
+        // 读取用户ID
+        todo.setUserId(cursor.getString(cursor.getColumnIndexOrThrow(TodoDBHelper.COLUMN_USER_ID)));
         return todo;
     }
 
@@ -156,7 +165,9 @@ public class TodoQueryDao {
     public int getAllUnArchiveTodoCount() {
         int count = 0;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0", null);
+        String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO + " WHERE "
+                + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{SPUtil.getCurrentUserId()});
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
         }
@@ -171,7 +182,10 @@ public class TodoQueryDao {
     public int getCompletedUnArchiveTodoCount() {
         int count = 0;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 1", null);
+        String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO + " WHERE "
+                + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 1 "
+                + " AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{SPUtil.getCurrentUserId()});
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
         }
@@ -192,8 +206,13 @@ public class TodoQueryDao {
                 + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 "
                 + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 0 "
                 + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " >= ? "
-                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayStartMillis), String.valueOf(tomorrowStartMillis)});
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ? "
+                + " AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{
+                String.valueOf(todayStartMillis),
+                String.valueOf(tomorrowStartMillis),
+                SPUtil.getCurrentUserId()
+        });
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
         }
@@ -212,8 +231,12 @@ public class TodoQueryDao {
         String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
                 + " WHERE " + TodoDBHelper.COLUMN_IS_ARCHIVED + " = 0 "
                 + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 0 "
-                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayStartMillis)});
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ? "
+                + " AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{
+                String.valueOf(todayStartMillis),
+                SPUtil.getCurrentUserId()
+        });
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
         }
@@ -221,6 +244,7 @@ public class TodoQueryDao {
         db.close();
         return count;
     }
+
     /**
      * 查询今日所有任务（包含归档、全部状态）
      * @param todayZero 今日0点时间戳
@@ -231,8 +255,13 @@ public class TodoQueryDao {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
                 + " WHERE " + TodoDBHelper.COLUMN_DEADLINE_TIME + " >= ? "
-                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayZero), String.valueOf(tomorrowZero)});
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ? "
+                + " AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{
+                String.valueOf(todayZero),
+                String.valueOf(tomorrowZero),
+                SPUtil.getCurrentUserId()
+        });
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
         }
@@ -252,8 +281,13 @@ public class TodoQueryDao {
         String sql = "SELECT COUNT(*) FROM " + TodoDBHelper.TABLE_TODO
                 + " WHERE " + TodoDBHelper.COLUMN_DEADLINE_TIME + " >= ? "
                 + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ? "
-                + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 1";
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayZero), String.valueOf(tomorrowZero)});
+                + " AND " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 1 "
+                + " AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{
+                String.valueOf(todayZero),
+                String.valueOf(tomorrowZero),
+                SPUtil.getCurrentUserId()
+        });
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
         }
@@ -261,6 +295,7 @@ public class TodoQueryDao {
         db.close();
         return count;
     }
+
     /**
      * 查询全部逾期任务（包含归档，未完成，截止时间早于今日0点）
      */
@@ -269,8 +304,12 @@ public class TodoQueryDao {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String sql = "SELECT * FROM " + TodoDBHelper.TABLE_TODO
                 + " WHERE " + TodoDBHelper.COLUMN_IS_COMPLETED + " = 0 "
-                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ?";
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(todayZeroMillis)});
+                + " AND " + TodoDBHelper.COLUMN_DEADLINE_TIME + " < ? "
+                + " AND " + TodoDBHelper.COLUMN_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{
+                String.valueOf(todayZeroMillis),
+                SPUtil.getCurrentUserId()
+        });
         while (cursor.moveToNext()) {
             list.add(cursorToEntity(cursor));
         }

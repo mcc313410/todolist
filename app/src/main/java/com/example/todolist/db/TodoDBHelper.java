@@ -9,7 +9,7 @@ public class TodoDBHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
     public static final String TABLE_TODO = "todo_table";
 
-    // 表字段
+    // 原有表字段
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_CONTENT = "content";
@@ -22,6 +22,8 @@ public class TodoDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_IS_TOP = "is_top";
     public static final String COLUMN_IS_ARCHIVED = "is_archived";
     public static final String COLUMN_REPEAT_TYPE = "repeat_type";
+    // 新增用户ID字段
+    public static final String COLUMN_USER_ID = "user_id";
 
     private static TodoDBHelper instance;
 
@@ -50,7 +52,8 @@ public class TodoDBHelper extends SQLiteOpenHelper {
                 COLUMN_TAG + " TEXT, " +
                 COLUMN_IS_TOP + " INTEGER DEFAULT 0, " +
                 COLUMN_IS_ARCHIVED + " INTEGER DEFAULT 0, " +
-                COLUMN_REPEAT_TYPE + " INTEGER DEFAULT 0)";
+                COLUMN_REPEAT_TYPE + " INTEGER DEFAULT 0, " +
+                COLUMN_USER_ID + " TEXT)";
         db.execSQL(createTableSql);
     }
 

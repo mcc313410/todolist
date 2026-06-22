@@ -28,6 +28,7 @@ import com.example.todolist.db.TodoQueryDao;
 import com.example.todolist.entity.TodoEntity;
 import com.example.todolist.R;
 import com.example.todolist.utils.AlarmUtil;
+import com.example.todolist.utils.SPUtil; // 新增导入用户工具类
 
 import java.util.Calendar;
 
@@ -133,7 +134,7 @@ public class TodoAddActivity extends BaseActivity {
                     // 时间选择器同样使用系统默认主题
                     TimePickerDialog timePickerDialog = new TimePickerDialog(
                             this,
-                            android.R.style.Theme_DeviceDefault_Dialog,  // ← 统一主题
+                            android.R.style.Theme_DeviceDefault_Dialog,
                             (tp, hour, minute) -> {
                                 tempCal.set(Calendar.HOUR_OF_DAY, hour);
                                 tempCal.set(Calendar.MINUTE, minute);
@@ -190,7 +191,7 @@ public class TodoAddActivity extends BaseActivity {
         }
 
         if (mTodoId == -1) {
-            // 新增任务
+            // 新增任务【核心修复：绑定当前登录用户ID】
             TodoEntity todo = new TodoEntity();
             todo.setTitle(title);
             todo.setContent(content);
@@ -202,6 +203,8 @@ public class TodoAddActivity extends BaseActivity {
             todo.setTop(isTop);
             todo.setPriority(priority);
             todo.setTag(tag);
+            // 关键代码：绑定登录用户唯一ID
+            todo.setUserId(SPUtil.getCurrentUserId());
 
             long newId = TodoAddDao.getInstance(this).addTodo(todo);
             TodoEntity newTodo = TodoQueryDao.getInstance(this).queryTodoById((int) newId);
@@ -209,7 +212,7 @@ public class TodoAddActivity extends BaseActivity {
             AlarmUtil.setAlarm(this, newTodo);
 
         } else {
-            // 编辑任务：先取消旧闹钟
+            // 编辑任务：无需重新设置userId，数据库原有数据自带
             AlarmUtil.cancelAlarm(this, mTodoId);
 
             mEditTodo.setTitle(title);

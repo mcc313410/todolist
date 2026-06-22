@@ -3,7 +3,7 @@ package com.example.todolist.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import com.example.todolist.db.TodoDBHelper;
+
 import com.example.todolist.entity.TodoEntity;
 
 public class TodoAddDao {
@@ -39,6 +39,8 @@ public class TodoAddDao {
         values.put(TodoDBHelper.COLUMN_IS_TOP, todo.isTop() ? 1 : 0);
         values.put(TodoDBHelper.COLUMN_IS_ARCHIVED, todo.isArchived() ? 1 : 0);
         values.put(TodoDBHelper.COLUMN_REPEAT_TYPE, todo.getRepeatType());
+        // 新增：存入当前待办所属用户ID
+        values.put(TodoDBHelper.COLUMN_USER_ID, todo.getUserId());
 
         long id = db.insert(TodoDBHelper.TABLE_TODO, null, values);
         db.close();

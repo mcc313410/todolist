@@ -9,6 +9,8 @@ public class NoteEntity {
     private int isTop = 0;      // 是否置顶：0-未置顶，1-置顶（默认未置顶）
     private String objectId;    // Bmob云端ID
     private boolean isSync = false; // 是否同步到云端（默认未同步）
+    // 新增用户ID
+    private String userId;
 
     // Getter & Setter
     public long getId() { return id; }
@@ -34,4 +36,11 @@ public class NoteEntity {
 
     public boolean isSync() { return isSync; }
     public void setSync(boolean sync) { this.isSync = sync; }
+
+    public String getUserId() {
+        return userId;
+    }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

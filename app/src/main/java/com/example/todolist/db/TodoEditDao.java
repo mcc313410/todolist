@@ -3,7 +3,7 @@ package com.example.todolist.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import com.example.todolist.db.TodoDBHelper;
+
 import com.example.todolist.entity.TodoEntity;
 
 public class TodoEditDao {

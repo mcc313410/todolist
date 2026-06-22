@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class NoteDBHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "note.db";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
-    // 笔记表
+    // 笔记表字段
     public static final String TABLE_NOTE = "note";
     public static final String COL_ID = "_id";
     public static final String COL_TITLE = "title";
@@ -20,6 +20,8 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public static final String COL_OBJECT_ID = "object_id";
     public static final String COL_IS_SYNC = "is_sync";
     public static final String COL_IS_DELETED = "is_deleted";
+    // 新增用户ID字段
+    public static final String COL_USER_ID = "user_id";
 
     // 回收站表
     public static final String TABLE_TRASH = "trash";
@@ -27,6 +29,7 @@ public class NoteDBHelper extends SQLiteOpenHelper {
     public static final String COL_TRASH_NOTE_ID = "note_id";
     public static final String COL_TRASH_DELETE_TIME = "delete_time";
 
+    // 创建笔记表SQL（包含user_id）
     private static final String CREATE_TABLE_NOTE =
             "CREATE TABLE " + TABLE_NOTE + " (" +
                     COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -37,7 +40,8 @@ public class NoteDBHelper extends SQLiteOpenHelper {
                     COL_IS_COLLECT + " INTEGER DEFAULT 0, " +
                     COL_OBJECT_ID + " TEXT, " +
                     COL_IS_SYNC + " INTEGER DEFAULT 0, " +
-                    COL_IS_DELETED + " INTEGER DEFAULT 0)"; // 新增删除标记
+                    COL_IS_DELETED + " INTEGER DEFAULT 0, " +
+                    COL_USER_ID + " TEXT)";
 
     // 创建回收站表 SQL
     private static final String CREATE_TABLE_TRASH =
@@ -58,8 +62,13 @@ public class NoteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // 版本3新增删除标记
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE " + TABLE_NOTE + " ADD COLUMN " + COL_IS_DELETED + " INTEGER DEFAULT 0");
+        }
+        // 版本4新增用户id字段，实现多账号数据隔离
+        if (oldVersion < 4) {
+            db.execSQL("ALTER TABLE " + TABLE_NOTE + " ADD COLUMN " + COL_USER_ID + " TEXT");
         }
     }
 }

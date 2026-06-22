@@ -6,6 +6,7 @@ import com.example.todolist.base.BaseActivity;
 import com.example.todolist.databinding.ActivityNoteAddBinding;
 import com.example.todolist.db.NoteAddDao;
 import com.example.todolist.entity.NoteEntity;
+import com.example.todolist.utils.SPUtil; // 新增用户工具类导入
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -47,6 +48,8 @@ public class NoteAddActivity extends BaseActivity {
         note.setIsTop(0);
         note.setIsCollect(0);
         note.setSync(false);
+        // 核心修复：绑定当前登录用户ID
+        note.setUserId(SPUtil.getCurrentUserId());
 
         long id = addDao.insert(note);
         if (id > 0) {

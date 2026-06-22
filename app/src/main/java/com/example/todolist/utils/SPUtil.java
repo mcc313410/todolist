@@ -3,6 +3,8 @@ package com.example.todolist.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import cn.bmob.v3.BmobUser;
+
 public class SPUtil {
     private static final String SP_NAME = "user_info";
     private static SharedPreferences sp;
@@ -53,6 +55,14 @@ public class SPUtil {
     // 获取头像本地路径
     public static String getAvatarPath() {
         return sp.getString("avatar_path", "");
+    }
+    // 获取当前登录用户唯一ID
+    public static String getCurrentUserId() {
+        BmobUser user = BmobUser.getCurrentUser(BmobUser.class);
+        if (user == null) {
+            return "";
+        }
+        return user.getObjectId();
     }
 
 }

@@ -17,12 +17,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
+import com.example.todolist.db.TodoDBHelper;
 import com.bumptech.glide.Glide;
 import com.example.todolist.R;
+import com.example.todolist.db.NoteDBHelper;
 import com.example.todolist.db.NoteQueryDao;
+import com.example.todolist.db.TodoQueryDao;
 import com.example.todolist.entity.NoteEntity;
 import com.example.todolist.entity.UserBean;
+import com.example.todolist.utils.DateUtil;
 import com.example.todolist.utils.SPUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,11 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import cn.bmob.v3.BmobUser;
-import com.example.todolist.db.TodoQueryDao;
-import com.example.todolist.utils.DateUtil;
-import com.example.todolist.ui.activity.NoteListActivity;
-import com.example.todolist.ui.activity.TodoListActivity;
-import com.example.todolist.ui.activity.TodoOverdueActivity;
 
 public class MineActivity extends AppCompatActivity {
 
@@ -84,6 +82,8 @@ public class MineActivity extends AppCompatActivity {
             startActivity(new Intent(MineActivity.this, EditUserInfoActivity.class));
         });
 
+        // ========== 修复后的退出登录逻辑 ==========
+        // 仅清除登录状态，不再删除本地数据库笔记、待办数据
         btnLogout.setOnClickListener(v -> {
             BmobUser.logOut();
             SPUtil.clearUser();
@@ -91,7 +91,7 @@ public class MineActivity extends AppCompatActivity {
             startActivity(new Intent(MineActivity.this, LoginActivity.class));
             finish();
         });
-        llOverdueClick = findViewById(R.id.ll_overdue_box);
+
         llOverdueClick.setOnClickListener(v -> {
             Intent intent = new Intent(MineActivity.this, TodoOverdueActivity.class);
             startActivity(intent);
@@ -172,15 +172,15 @@ public class MineActivity extends AppCompatActivity {
     }
 
     // ------------------------------
-    // 真实笔记统计
+    // 真实笔记统计（NoteQueryDao 带用户过滤）
     // ------------------------------
     private void loadStatistics() {
-        // ========== 原有笔记统计 不变 ==========
+        // ========== 笔记统计 ==========
         NoteQueryDao dao = new NoteQueryDao(this);
         List<NoteEntity> list = dao.queryAllNotes();
         tvNoteCount.setText(String.valueOf(list.size()));
 
-        // ========== 待办基础统计（今日待办、逾期）原有代码不变 ==========
+        // ========== 待办基础统计（今日待办、逾期） ==========
         TodoQueryDao todoQueryDao = TodoQueryDao.getInstance(this);
         long todayZero = DateUtil.getTodayZeroMillis();
         long tomorrowZero = DateUtil.getTomorrowZeroMillis();
@@ -191,7 +191,7 @@ public class MineActivity extends AppCompatActivity {
         int overdueTodo = todoQueryDao.getOverdueUnCompleteTodoCount(todayZero);
         tvOverdueCount.setText(String.valueOf(overdueTodo));
 
-        // ========== 新增：今日全量任务完成率（包含归档） ==========
+        // ========== 今日全量任务完成率 ==========
         int allTodayTask = todoQueryDao.getAllTodayTodoCount(todayZero, tomorrowZero);
         int completeTodayTask = todoQueryDao.getCompletedTodayTodoCount(todayZero, tomorrowZero);
         int finishRate = 0;
@@ -247,15 +247,15 @@ public class MineActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            // 相册选图成功，直接处理原图，跳过裁剪流程
+            // 相册选图成功 → 唤起系统裁剪
             if (requestCode == REQUEST_CODE_ALBUM && data != null) {
                 Uri uri = data.getData();
                 if (uri != null) {
-                    handleCropImage(uri);
-                    Toast.makeText(this, "头像更换成功", Toast.LENGTH_SHORT).show();
+                    // 原来直接 handleCropImage(uri);
+                    cropImage(uri); // 恢复裁剪
                 }
             }
-            // 裁剪分支保留，兼容以后恢复裁剪功能
+            // 裁剪完成后保存
             else if (requestCode == REQUEST_CODE_CROP) {
                 handleCropImage(tempCropUri);
             }
